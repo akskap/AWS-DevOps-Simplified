@@ -114,3 +114,7 @@ Resources:
       VpcId:
         Fn::ImportValue:
           'Fn::Sub': "${NetworkStackName}-vpc-id"
+Outputs:
+  AppLoadBalancer:
+    Description: A reference to the ALB Domain Name
+    Value: !GetAtt AppLoadBalancer.DNSName
