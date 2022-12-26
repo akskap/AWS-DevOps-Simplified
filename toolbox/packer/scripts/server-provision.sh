@@ -4,22 +4,27 @@
 set -ex
 sudo yum -y update && sudo yum install -y wget
 
-# Installing and configuring Gitlab Runner
+# Creating required directory and install python libraries
 echo -e "\nRunning scripts as '$(whoami)'\n\n"
 
 sudo mkdir -p /opt/ads-server/
+
+sudo pip3 install requests
 
 # Place server initiation file at the expected location
 cat > ~/server.py << EOF
 # Python 3 server example
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import time
+import requests
 
 hostName = "0.0.0.0"
 serverPort = 8080
 
 class MyServer(BaseHTTPRequestHandler):
     def do_GET(self):
+        metadata_api = requests.get('http://169.254.169.254/1.0/meta-data/instance-id')
+        instance_id = metadata_api.content
         self.send_response(200)
         self.send_header("Content-type", "text/html")
         self.end_headers()
@@ -27,6 +32,7 @@ class MyServer(BaseHTTPRequestHandler):
         self.wfile.write(bytes("<p>Request: %s</p>" % self.path, "utf-8"))
         self.wfile.write(bytes("<body>", "utf-8"))
         self.wfile.write(bytes("<p>AWS DevOps Simplified - Simple HTTP Server</p>", "utf-8"))
+        self.wfile.write(bytes("<p>Response received from - " + instance_id.decode("utf-8")  + "</p>", "utf-8"))
         self.wfile.write(bytes("</body></html>", "utf-8"))
 
 if __name__ == "__main__":
