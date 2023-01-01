@@ -3,6 +3,10 @@
 # Update apt packages
 set -ex
 sudo yum -y update && sudo yum install -y wget
+sudo pip3 install requests
+
+# Setup web server directory
+sudo mkdir -p /opt/ads-server/
 
 # Installing CodeDeploy agent in the instance
 sudo yum -y install ruby wget

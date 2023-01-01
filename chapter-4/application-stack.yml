@@ -115,6 +115,28 @@ Resources:
         Fn::ImportValue:
           'Fn::Sub': "${NetworkStackName}-vpc-id"
 Outputs:
-  AppLoadBalancer:
+  AppLoadBalancerName:
+    Description: A reference to the ALB Name
+    Value: !GetAtt AppLoadBalancer.LoadBalancerName
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName", alb-name ] ]
+  AppLoadBalancerDNS:
     Description: A reference to the ALB Domain Name
     Value: !GetAtt AppLoadBalancer.DNSName
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName", alb-dns ] ]
+  AppLoadBalancerARN:
+    Description: A reference to the ALB ARN
+    Value: !Ref AppLoadBalancer
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName", alb-arn ] ]
+  AutoScalingGroup:
+    Description: A reference to the Auto Scaling Group
+    Value: !Ref AutoScalingGroup
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName", auto-scaling-group ] ]
+  InstanceTargetGroupName:
+    Description: A reference to the Target Group Name
+    Value: !GetAtt InstanceTargetGroup.TargetGroupName
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName", target-group-name ] ]

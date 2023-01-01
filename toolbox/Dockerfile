@@ -20,6 +20,7 @@ RUN apk --no-cache add --virtual builds-deps build-base python3
 
 # Install AWSCLI
 RUN pip install --upgrade pip && \
-    pip install --upgrade awscli
+    pip install --upgrade awscli && \
+    pip install git-remote-codecommit
 
 ADD packer /opt/packer-build/
