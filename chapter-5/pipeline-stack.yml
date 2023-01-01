@@ -289,7 +289,7 @@ Resources:
       AutoScalingGroups:
         - Fn::ImportValue:
             'Fn::Sub': "${ApplicationStackName}-auto-scaling-group"
-      DeploymentConfigName: "CodeDeployDefault.AllAtOnce"
+      DeploymentConfigName: "CodeDeployDefault.OneAtATime"
       Ec2TagFilters:
         - Type: KEY_ONLY
           Key: aws-cloudformation:stack-id
