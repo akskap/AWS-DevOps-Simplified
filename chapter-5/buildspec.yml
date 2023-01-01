@@ -6,14 +6,13 @@ phases:
     on-failure: ABORT
     commands:
       - git clone https://github.com/aws-samples/aws-codedeploy-appspec-assistant.git
-      - cd aws-codedeploy-appspec-assistant
-      - go build -o $GOPATH/bin/appSpecAssistant
+      - cd aws-codedeploy-appspec-assistant/aws-codedeploy-appspec-assistant
+      - go build -o /usr/local/bin/appSpecAssistant
 
   build:
     on-failure: ABORT 
     commands: 
-      - whoami
-      - appSpecAssistant validate --filePath appspec.yml --computePlatform server
+      - appSpecAssistant validate --filePath ../../appspec.yml --computePlatform server
 
 artifacts: 
   files: 

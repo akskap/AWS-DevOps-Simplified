@@ -4,6 +4,10 @@ files:
   - source: /web_server.py
     destination: /opt/ads-server/
 hooks:
+  BeforeInstall:
+    - location: scripts/stop_server.sh
+      timeout: 30
+      runas: root
   AfterInstall:
     - location: scripts/install_dependencies.sh
       timeout: 30
