@@ -43,11 +43,45 @@ Resources:
       VpcId:
         Fn::ImportValue:
           'Fn::Sub': "${NetworkStackName}-vpc-id"
+  InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref InstanceProfileRole
+  InstanceProfileRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: AWS-DevOps-Simplified-Instance-Profile-Role
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          -
+            Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action: sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+      Policies:
+        -
+          PolicyName: AWS-DevOps-Simplified-Instance-Profile-Role-Policy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              -
+                Effect: Allow
+                Action:
+                  - s3:*
+                Resource: '*'
   AppLaunchTemplate:
     Type: AWS::EC2::LaunchTemplate
     Properties:
       LaunchTemplateName: !Sub ${AWS::StackName}-launch-template
       LaunchTemplateData:
+        IamInstanceProfile:
+          Arn: !GetAtt InstanceProfile.Arn
         ImageId: !Ref AMIId
         InstanceType: !Ref InstanceType
         SecurityGroupIds:

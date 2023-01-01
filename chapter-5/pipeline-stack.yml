@@ -16,12 +16,12 @@ Parameters:
     Type: String
 
 Resources:
-  S3ApplicationArtifactsBucket:
-    Type: AWS::S3::Bucket
-    Properties: 
-      AccessControl: Private
-      VersioningConfiguration:
-        Status: Enabled
+  # S3ApplicationArtifactsBucket:
+  #   Type: AWS::S3::Bucket
+  #   Properties: 
+  #     AccessControl: Private
+  #     VersioningConfiguration:
+  #       Status: Enabled
 
   S3PipelineArtifactsBucket:
     Type: AWS::S3::Bucket
@@ -35,10 +35,10 @@ Resources:
     Properties:
       RepositoryName: !Ref RepositoryName
 
-  CodePipelineBlueprintServiceRole:
+  CodePipelineServiceRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: AWS-DevOps-Simplified-CodePipeline-Service-Role
+      RoleName: AWS-DevOps-Simplified-CodePipeline-ServiceRole
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -73,10 +73,7 @@ Resources:
               -
                 Effect: Allow
                 Action:
-                  - codedeploy:CreateDeployment
-                  - codedeploy:GetDeploymentConfig
-                  - codedeploy:RegisterApplicationRevision
-                  - codedeploy:GetDeployment
+                  - codedeploy:*
                 Resource: '*'                
               - 
                 Effect: Allow
@@ -99,7 +96,7 @@ Resources:
     Properties:
       Name: Application-Rollout-Pipeline
       RoleArn:
-        !GetAtt CodePipelineBlueprintServiceRole.Arn
+        !GetAtt CodePipelineServiceRole.Arn
       Stages:
         - Name: SourceCode
           Actions:
@@ -202,10 +199,11 @@ Resources:
                   - s3:GetObjectVersion
                   - s3:ListBucket
                 Resource:
-                  - Fn::Sub: 'arn:aws:s3:::${S3ApplicationArtifactsBucket}/*'
-                  - Fn::Sub: 'arn:aws:s3:::${S3ApplicationArtifactsBucket}'
                   - Fn::Sub: 'arn:aws:s3:::${S3PipelineArtifactsBucket}/*'
-                  - Fn::Sub: 'arn:aws:s3:::${S3PipelineArtifactsBucket}'
+                  - Fn::Sub: 'arn:aws:s3:::${S3PipelineArtifactsBucket}'                
+                  # - Fn::Sub: 'arn:aws:s3:::${S3ApplicationArtifactsBucket}/*'
+                  # - Fn::Sub: 'arn:aws:s3:::${S3ApplicationArtifactsBucket}'
+
 
   BuildApplicationArchive:
     Type: AWS::CodeBuild::Project
@@ -221,10 +219,10 @@ Resources:
         ComputeType: BUILD_GENERAL1_SMALL
         Image: aws/codebuild/standard:4.0
         EnvironmentVariables:
-          - Name: APPLICATION_ARTIFACT_STORE_S3_LOCATION
-            Value: !Ref S3ApplicationArtifactsBucket
           - Name: REGION
-            Value: 'eu-central-1'
+            Value: 'eu-central-1'        
+          # - Name: APPLICATION_ARTIFACT_STORE_S3_LOCATION
+          #   Value: !Ref S3ApplicationArtifactsBucket
       Source:
         Type: CODEPIPELINE
       TimeoutInMinutes: 15
@@ -273,10 +271,10 @@ Resources:
                   - s3:GetObjectVersion
                   - s3:ListBucket
                 Resource:
-                  - Fn::Sub: 'arn:aws:s3:::${S3ApplicationArtifactsBucket}/*'
-                  - Fn::Sub: 'arn:aws:s3:::${S3ApplicationArtifactsBucket}'
                   - Fn::Sub: 'arn:aws:s3:::${S3PipelineArtifactsBucket}/*'
                   - Fn::Sub: 'arn:aws:s3:::${S3PipelineArtifactsBucket}'
+                  # - Fn::Sub: 'arn:aws:s3:::${S3ApplicationArtifactsBucket}/*'
+                  # - Fn::Sub: 'arn:aws:s3:::${S3ApplicationArtifactsBucket}'                  
 
   CodeDeployApplication:
     Type: AWS::CodeDeploy::Application

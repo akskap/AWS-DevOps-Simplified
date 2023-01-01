@@ -1,5 +1,7 @@
 FROM node:14-alpine
 
+LABEL author.name="Akshay Kapoor" author.email="akapoor87@gmail.com" author.project="AWS DevOps Simplified"
+
 ENV AWS_REGION=eu-central-1
 
 # Install packages
