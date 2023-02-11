@@ -3,7 +3,6 @@
 # Update apt packages
 set -ex
 sudo yum -y update && sudo yum install -y wget
-sudo pip3 install requests
 
 # Setup web server directory
 sudo mkdir -p /opt/ads-server/

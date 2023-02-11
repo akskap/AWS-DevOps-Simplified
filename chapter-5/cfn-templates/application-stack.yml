@@ -51,7 +51,6 @@ Resources:
   InstanceProfileRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: AWS-DevOps-Simplified-Instance-Profile-Role
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:

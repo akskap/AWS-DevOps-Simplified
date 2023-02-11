@@ -25,4 +25,5 @@ RUN pip install --upgrade pip && \
     pip install --upgrade awscli && \
     pip install git-remote-codecommit
 
-ADD packer /opt/packer-build/
+RUN git clone https://akskap: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@github.com/akskap/AWS-DevOps-Simplified.git /opt/aws-devops-simplified
+
