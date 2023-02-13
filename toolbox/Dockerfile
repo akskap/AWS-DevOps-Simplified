@@ -20,6 +20,9 @@ RUN apk update && apk add --update --no-cache \
 
 RUN apk --no-cache add --virtual builds-deps build-base python3
 
+RUN npm install -g aws-cdk && \
+    npm install aws-cdk-lib
+
 # Install AWSCLI
 RUN pip install --upgrade pip && \
     pip install --upgrade awscli && \
