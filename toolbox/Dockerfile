@@ -16,7 +16,8 @@ RUN apk update && apk add --update --no-cache \
     vim \
     wget \
     packer \
-    curl
+    curl \
+    tree
 
 RUN apk --no-cache add --virtual builds-deps build-base python3
 
