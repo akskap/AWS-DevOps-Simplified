@@ -1,4 +1,4 @@
-from flask import Flask, abort, render_template, request, url_for, redirect
+from flask import Flask, render_template, request, url_for, redirect
 from pymongo import MongoClient
 from markupsafe import escape
 from bson.objectid import ObjectId
