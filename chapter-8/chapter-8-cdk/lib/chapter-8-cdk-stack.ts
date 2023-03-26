@@ -8,7 +8,6 @@ import * as ecs_patterns from 'aws-cdk-lib/aws-ecs-patterns';
 import { setUncaughtExceptionCaptureCallback } from 'process';
 import { Ec2Action } from 'aws-cdk-lib/aws-cloudwatch-actions';
 import { aws_aps as aps } from 'aws-cdk-lib';
-import { aws_grafana as grafana } from 'aws-cdk-lib';
 
 export class Chapter8CdkStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -77,10 +76,6 @@ export class Chapter8CdkStack extends cdk.Stack {
 
     const apsWorkspace = new aps.CfnWorkspace(this, 'APSWorkspace', {
       alias: 'aws-devops-simplified-aps-workspace'
-    });
-
-    const grafanaWorkspace = new grafana.CfnWorkspace(this, 'GrafanaWorkspace', {
-      name: 'aws-devops-simplified-grafana-workspace'
     });
 
     const otelCollector = new ecs.ContainerDefinition(this, "OtelCollectorDefn", {
