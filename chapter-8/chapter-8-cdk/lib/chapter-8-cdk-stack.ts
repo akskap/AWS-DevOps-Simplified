@@ -8,6 +8,7 @@ import * as ecs_patterns from 'aws-cdk-lib/aws-ecs-patterns';
 import { setUncaughtExceptionCaptureCallback } from 'process';
 import { Ec2Action } from 'aws-cdk-lib/aws-cloudwatch-actions';
 import { aws_aps as aps } from 'aws-cdk-lib';
+import { aws_grafana as grafana } from 'aws-cdk-lib';
 
 export class Chapter8CdkStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -78,6 +79,10 @@ export class Chapter8CdkStack extends cdk.Stack {
       alias: 'aws-devops-simplified-aps-workspace'
     });
 
+    const grafanaWorkspace = new grafana.CfnWorkspace(this, 'GrafanaWorkspace', {
+      name: 'aws-devops-simplified-grafana-workspace'
+    });
+
     const otelCollector = new ecs.ContainerDefinition(this, "OtelCollectorDefn", {
       image: ecs.ContainerImage.fromRegistry("public.ecr.aws/aws-observability/aws-otel-collector:v0.26.1"),
       taskDefinition: fargateTaskDefn,
@@ -86,7 +91,6 @@ export class Chapter8CdkStack extends cdk.Stack {
       environment: {
         "AWS_PROMETHEUS_ENDPOINT": `${apsWorkspace.attrPrometheusEndpoint}api/v1/remote_write`,
         "AWS_PROMETHEUS_SCRAPING_ENDPOINT": "0.0.0.0:5000"
-        // "AWS_PROMETHEUS_ENDPOINT": "https://aps-workspaces.eu-central-1.amazonaws.com/workspaces/WORKSPACE_ID/api/v1/remote_write"
       }
     })
 
