@@ -45,8 +45,6 @@ export class Chapter8CdkStack extends cdk.Stack {
                 "ecr:BatchCheckLayerAvailability",
                 "ecr:GetDownloadUrlForLayer",
                 "ecr:BatchGetImage",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents",
                 "logs:*",
                 "elasticfilesystem:*",
                 "aps:RemoteWrite",
@@ -76,7 +74,7 @@ export class Chapter8CdkStack extends cdk.Stack {
       containerPort: 5000
     })
 
-    const apsWorkspace = new aps.CfnWorkspace(this, 'MyCfnWorkspace', {
+    const apsWorkspace = new aps.CfnWorkspace(this, 'APSWorkspace', {
       alias: 'aws-devops-simplified-aps-workspace'
     });
 
