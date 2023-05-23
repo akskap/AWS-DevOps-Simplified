@@ -1,0 +1,24 @@
+version: 0.2 
+phases:
+  install:
+    runtime-versions:
+      java: openjdk8
+    on-failure: ABORT
+    commands:
+      - mkdir /tmp/some_tmp_dir
+      - CWD=$(pwd)
+      - cd /tmp/some_tmp_dir
+      - curl -sLS https://github.com/jeremylong/DependencyCheck/releases/download/v8.2.1/dependency-check-8.2.1-release.zip > dependency-check.zip
+      - unzip dependency-check.zip 
+      - ln -s ${PWD}/dependency-check/bin/dependency-check.sh /usr/local/bin/dependency-check
+      - cd $CWD
+
+  build:
+    on-failure: ABORT 
+    commands: 
+      - dependency-check --scan "${PWD}" --enableExperimental --failOnCVSS 10 --format JSON
+      - cat dependency-check-report.json | jq -r .    
+
+artifacts: 
+  files: 
+    - '**/*'
