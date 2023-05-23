@@ -27,6 +27,7 @@ export class DeliveryPipelineStack extends cdk.Stack {
         buildImage: codebuild.LinuxBuildImage.STANDARD_2_0,
         privileged: true,
       },
+      cache: codebuild.Cache.local(codebuild.LocalCacheMode.CUSTOM)
     });
 
     const sastCodebuildProject = new codebuild.PipelineProject(this, 'SASTValidate',{
