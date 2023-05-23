@@ -33,7 +33,7 @@ def todos():
             todos_collection.insert_one({"todo": todo_item, "tasktype": todo_type})
             return redirect(url_for('todos'))
         except Exception as e:
-            logging.error("Exception occurred while submitting data to MongoDB", exc_info=True)
+            pass
     all_todos = todos_collection.find()
     return render_template('index.html', all_todos = all_todos)
 
