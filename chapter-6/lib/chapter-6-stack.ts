@@ -48,13 +48,26 @@ export class Chapter6Stack extends cdk.Stack {
     kmsPermissionsForLambda.addActions("kms:*");
     kmsPermissionsForLambda.addResources("*");
 
+    const createLogsPermissionsForLambda = new iam.PolicyStatement();
+    createLogsPermissionsForLambda.addActions("logs:CreateLogGroup");
+    var logGroupResource = `arn:aws:logs:${process.env.CDK_DEFAULT_REGION}:${process.env.CDK_DEFAULT_ACCOUNT}:*`
+    createLogsPermissionsForLambda.addResources(logGroupResource);
+
+    const putLogEventsPermissionsForLambda = new iam.PolicyStatement();
+    putLogEventsPermissionsForLambda.addActions("logs:CreateLogStream");
+    putLogEventsPermissionsForLambda.addActions("logs:PutLogEvents");
+    var logGroupArnResource = `arn:aws:logs:${process.env.CDK_DEFAULT_REGION}:${process.env.CDK_DEFAULT_ACCOUNT}:log-group:/aws/lambda/*:*`
+    putLogEventsPermissionsForLambda.addResources(logGroupResource);
+
     imageHandler.addToRolePolicy(rekognitionPermissionsForLambda);
     imageHandler.addToRolePolicy(s3PermissionsForLambda);
     imageHandler.addToRolePolicy(dynamodbPermissionsForLambda);
     imageHandler.addToRolePolicy(kmsPermissionsForLambda);
+    imageHandler.addToRolePolicy(createLogsPermissionsForLambda);
+    imageHandler.addToRolePolicy(putLogEventsPermissionsForLambda);
 
     // Trigger lambda function when S3 object is added
-    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3_notifications.LambdaDestination(imageHandler), {suffix: '.jpeg'});
+    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3_notifications.LambdaDestination(imageHandler));
 
   }
 }

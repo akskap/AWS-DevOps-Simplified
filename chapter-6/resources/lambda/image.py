@@ -10,13 +10,17 @@ def lambda_handler(event, context):
     rekognition_client = boto3.client('rekognition', region_name = 'eu-central-1')
 
     logger.info("Passing S3 object file reference to AWS Rekognition")
-    label_detection_response = rekognition_client.detect_labels(
-        Image = {
-            "S3Object": {
-                "Bucket": event["Records"][0]["s3"]["bucket"]["name"],
-                "Name": event["Records"][0]["s3"]["object"]["key"]
-            }
-        }, MaxLabels=5,  MinConfidence=70)
+    try:
+        label_detection_response = rekognition_client.detect_labels(
+            Image = {
+                "S3Object": {
+                    "Bucket": event["Records"][0]["s3"]["bucket"]["name"],
+                    "Name": event["Records"][0]["s3"]["object"]["key"]
+                }
+            }, MaxLabels=5,  MinConfidence=70)
+    except:
+        logger.exception("Unexpected exception raised by Rekognition")
+        raise
     
     logger.info("Put identified labels into DynamoDB table")
     ddb_client = boto3.client('dynamodb', region_name = 'eu-central-1')
