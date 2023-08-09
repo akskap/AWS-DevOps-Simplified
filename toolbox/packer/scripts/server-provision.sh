@@ -19,11 +19,17 @@ import time
 import requests
 
 hostName = "0.0.0.0"
-serverPort = 8080
+serverPort = 8081
 
 class MyServer(BaseHTTPRequestHandler):
     def do_GET(self):
-        metadata_api = requests.get('http://169.254.169.254/1.0/meta-data/instance-id')
+        token_url = "http://169.254.169.254/latest/api/token"
+        headers = {'X-aws-ec2-metadata-token-ttl-seconds': '21600'}
+        metadata_token = requests.put(token_url, headers=headers).content
+        print(metadata_token)
+        instance_id_headers = {'X-aws-ec2-metadata-token': metadata_token}
+        instance_id_url = "http://169.254.169.254/1.0/meta-data/instance-id"
+        metadata_api = requests.get(instance_id_url, headers=instance_id_headers)
         instance_id = metadata_api.content
         self.send_response(200)
         self.send_header("Content-type", "text/html")
