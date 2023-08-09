@@ -2,7 +2,7 @@
 
 # Update apt packages
 set -ex
-sudo yum -y update && sudo yum install -y wget
+sudo yum -y update && sudo yum install -y wget && sudo yum install -y pip
 
 # Creating required directory and install python libraries
 echo -e "\nRunning scripts as '$(whoami)'\n\n"
