@@ -57,7 +57,7 @@ export class Chapter6Stack extends cdk.Stack {
     putLogEventsPermissionsForLambda.addActions("logs:CreateLogStream");
     putLogEventsPermissionsForLambda.addActions("logs:PutLogEvents");
     var logGroupArnResource = `arn:aws:logs:${process.env.CDK_DEFAULT_REGION}:${process.env.CDK_DEFAULT_ACCOUNT}:log-group:/aws/lambda/*:*`
-    putLogEventsPermissionsForLambda.addResources(logGroupResource);
+    putLogEventsPermissionsForLambda.addResources(logGroupArnResource);
 
     imageHandler.addToRolePolicy(rekognitionPermissionsForLambda);
     imageHandler.addToRolePolicy(s3PermissionsForLambda);

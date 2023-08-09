@@ -5,8 +5,6 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as efs from 'aws-cdk-lib/aws-efs';
 import * as ecs_patterns from 'aws-cdk-lib/aws-ecs-patterns';
-import { setUncaughtExceptionCaptureCallback } from 'process';
-import { Ec2Action } from 'aws-cdk-lib/aws-cloudwatch-actions';
 
 export class Chapter7Stack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -36,26 +34,67 @@ export class Chapter7Stack extends cdk.Stack {
       clusterName: "aws-devops-simplified",
     })
 
-    const executionRolePolicy =  new iam.PolicyStatement({
+    const efsSecurityGroup = new SecurityGroup(this, "EFSSecurityGroup", {
+      allowAllOutbound: true,
+      vpc:customVPC,
+      description: "Security Group for the EFS File System"
+    })
+    efsSecurityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(2049));
+
+    const fileSystem = new efs.FileSystem(this, "FileSystem", {
+      vpc: customVPC,
+      securityGroup: efsSecurityGroup,
+    })
+
+    const efsVolume = {
+      name: volumeName,
+      efsVolumeConfiguration: {
+        fileSystemId: fileSystem.fileSystemId
+      }
+    }
+
+    var logGroupResource = `arn:aws:logs:${process.env.CDK_DEFAULT_REGION}:${process.env.CDK_DEFAULT_ACCOUNT}:log-group:*`
+    var logGroupStreamResource = `arn:aws:logs:${process.env.CDK_DEFAULT_REGION}:${process.env.CDK_DEFAULT_ACCOUNT}:log-group:*:log-stream:*`
+
+    const executionRolePolicyForLogGroup =  new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
-      resources: ['*'],
+      resources: [logGroupResource],
       actions: [
-                "ecr:GetAuthorizationToken",
-                "ecr:BatchCheckLayerAvailability",
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchGetImage",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents",
-                "logs:*",
-                "elasticfilesystem:*"
+                "logs:CreateLogGroup",
             ]
     });
+
+    const executionRolePolicyForLogStream =  new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      resources: [logGroupStreamResource],
+      actions: [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents",
+            ]
+    });
+
+    const executionRolePolicyForEFS =  new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      resources: [fileSystem.fileSystemArn],
+      actions: [
+                "elasticfilesystem:ClientMount",
+                "elasticfilesystem:ClientWrite",
+                "elasticfilesystem:DescribeFileSystems"
+            ]
+    });
+
+
     const fargateTaskDefn = new ecs.FargateTaskDefinition(this, "FargateTaskDefn", {
       cpu: 4096,
       memoryLimitMiB: 8192,
     });
-    fargateTaskDefn.addToExecutionRolePolicy(executionRolePolicy);
-    fargateTaskDefn.addToTaskRolePolicy(executionRolePolicy);
+
+    fargateTaskDefn.addToExecutionRolePolicy(executionRolePolicyForLogGroup);
+    fargateTaskDefn.addToExecutionRolePolicy(executionRolePolicyForLogStream);
+    fargateTaskDefn.addToExecutionRolePolicy(executionRolePolicyForEFS);
+    fargateTaskDefn.addToTaskRolePolicy(executionRolePolicyForLogGroup);
+    fargateTaskDefn.addToTaskRolePolicy(executionRolePolicyForEFS);
+    fargateTaskDefn.addToTaskRolePolicy(executionRolePolicyForLogStream);
 
     const appContainer = new ecs.ContainerDefinition(this, "AppContainerDefn", {
       image: ecs.ContainerImage.fromRegistry("akskap/flask-todo-list-app"),
@@ -80,25 +119,6 @@ export class Chapter7Stack extends cdk.Stack {
       sourceVolume: volumeName,
       readOnly: false,
     })
-
-    const efsSecurityGroup = new SecurityGroup(this, "EFSSecurityGroup", {
-      allowAllOutbound: true,
-      vpc:customVPC,
-      description: "Security Group for the EFS File System"
-    })
-    efsSecurityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(2049));
-    
-    const fileSystem = new efs.FileSystem(this, "FileSystem", {
-      vpc: customVPC,
-      securityGroup: efsSecurityGroup,
-    })
-
-    const efsVolume = {
-      name: volumeName,
-      efsVolumeConfiguration: {
-        fileSystemId: fileSystem.fileSystemId
-      }
-    }
 
     fargateTaskDefn.addVolume(efsVolume);
 
