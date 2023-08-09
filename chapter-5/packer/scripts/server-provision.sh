@@ -2,7 +2,7 @@
 
 # Update apt packages
 set -ex
-sudo yum -y update && sudo yum install -y wget
+sudo yum -y update && sudo yum install -y wget && sudo yum install -y pip
 
 # Setup web server directory
 sudo mkdir -p /opt/ads-server/

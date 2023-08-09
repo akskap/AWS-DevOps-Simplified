@@ -1,1 +1,1 @@
-sudo pip3 install requests
+sudo pip install requests
