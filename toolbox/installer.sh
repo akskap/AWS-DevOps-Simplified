@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 
+# Switch to Cloud9 home directory
 pushd /home/ec2-user/environment
-git clone https://akskap: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@github.com/akskap/AWS-DevOps-Simplified.git
-rm -rf .git
 
+# Remove existing readme.md file
+rm -f README.md || true
+
+# Setup resources for AWS DevOps Simplified
+git init .
+git remote add origin https://github.com/akskap/AWS-DevOps-Simplified.git
+git fetch origin
+git checkout main
+rm -rf .git
