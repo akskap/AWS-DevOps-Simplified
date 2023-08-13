@@ -17,5 +17,3 @@ rm -rf .git
 sudo yum install -y yum-utils
 sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
 sudo yum -y install packer
-echo "export PATH=/usr/bin/packer:$PATH" >> /home/ec2-user/.bashrc
-echo "export PATH=/usr/bin/packer:$PATH" >> /home/ec2-user/.bash_profile
